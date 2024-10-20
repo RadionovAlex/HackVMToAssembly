@@ -1,0 +1,27 @@
+﻿Rules:
+
+1. R13 register in assembly will be used to understand 
+where to go after function (standard or user-written) completion. 
+So, before call the function, M[R13] need to be filled by the next raw after function call.
+And after each function call, Jump to destionation from R13 need to be completed.
+
+2. R14 can be used for the push constant. 
+Push - as a separate command and R14 will conitans the value to write in the stack. 
+So, before call the func, need to write in the M[R14] required value.
+
+3. The order of functions is: 
+   - standard ariphmetic and logic functions: 
+    - add       x+y
+    - sub       x-y
+    - neg       -y
+    - eq        true if x=y else false
+    - gt        true if x>y else false
+    - lt        true if x<y else false
+    - and       x And y
+    - or        x Or y
+    - not       Not y
+   - functions from .vm files
+   
+4. To correctly start a program: 
+    - Before funtions declarations, @ProgramStart    +   0;JMP  should be called to skipp all functions calling
+    - After functions declarations, (ProgramStart) symbol should be declared
