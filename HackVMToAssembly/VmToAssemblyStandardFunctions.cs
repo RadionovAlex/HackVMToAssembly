@@ -192,15 +192,97 @@ M=D // write to the RAM[A] (where pointer points) temporary value from D registe
 @SP
 M=M+1  // increase stack pointer index
 
+@R14
+M=0
+
 @R13
 A=M
 0;JMP";
 
+        public static string GoToR13CodeRaw => @"
+@R13
+A=M
+0;JMP
+";
 
-        public static string PutConstantIntoD(int value) =>
+
+        public static string PutConstantIntoR14(int value) =>
             @$"@{value}
 D=A
 @R14
 M=D";
+
+        public static string PutSegmentIndexValueIntoR14(string segment, int index) =>
+            @$"@{index}
+D=A
+@{segment}
+A=D+M
+D=M
+@R14
+M=D";
+
+        public static string PutPointerIndexValueIntoR14(int ponterValue, int index) =>
+            $@"@{ponterValue}
+D=A
+@{index}
+A=D+A
+D=M
+@R14
+M=D";
+
+        public static string PopDefinition => @"
+// go to stackPointer, get previous value, write it in the R14. Then -> decrease stackPointer
+@SP
+A=M-1
+D=M
+
+@R14
+M=D
+
+@SP
+M=M-1
+
+@R13
+A=M
+0;JMP
+";
+
+        public static string PopR14IntoConstant(int value) =>
+           @$"//it should be actually called. By in case there is should be an stack cleaning - ok..";
+
+        public static string PopR14IntoSegment(string segment, int index) =>
+            $@"
+@{index}
+D=A
+@{segment}
+D=D+M
+@R15
+M=D
+
+@R14
+D=M
+
+@R15
+A=M
+M=D
+";
+
+        public static string PopR14IntoPointerIndex(int pointer, int index) =>
+            $@"
+@{pointer}
+D=A
+@{index}
+D=D+A
+@R15
+M=D
+
+@R14
+D=M
+
+@R15
+A=M
+M=D
+";
+
     }
 }

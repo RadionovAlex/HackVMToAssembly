@@ -9,7 +9,5 @@
         void WritePushPop(CommandType command, string segment, int index);
 
         void Close();
-
-        void SetCurrentCodeRaw(int raw);
     }
 }

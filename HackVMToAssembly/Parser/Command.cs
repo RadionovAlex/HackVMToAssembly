@@ -33,8 +33,10 @@
         {
             if (RawsUtil.ArithmeticFunctions.Contains(_raw))
                 return CommandType.C_Arithmetic;
-            else if (_raw.Contains("push"))
+            else if (_raw.StartsWith("push"))
                 return CommandType.C_Push;
+            else if (_raw.StartsWith("pop"))
+                return CommandType.C_Pop;
 
             return CommandType.C_If;
         }

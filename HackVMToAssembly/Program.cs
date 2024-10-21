@@ -21,6 +21,7 @@ while (parser.HasMoreCommands())
             break;
 
         case HackVMToAssembly.CommandType.C_Push:
+        case HackVMToAssembly.CommandType.C_Pop:
             codeWriter.WritePushPop(commandType, parser.Arg1, parser.Arg2);
             break;
 
