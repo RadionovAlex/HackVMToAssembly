@@ -225,15 +225,8 @@ D=M
 A=M-1
 D=M
 
-@R14
-M=D
-
 @SP
 M=M-1
-
-@R13
-A=M
-0;JMP
 ";
 
         public static string PopR14IntoConstant(int value) =>
@@ -241,34 +234,39 @@ A=M
 
         public static string PopR14IntoSegment(string segment, int index) =>
             $@"
+@R13
+M=D
+
 @{index}
 D=A
 @{segment}
 D=D+M
-@R15
+@R14
 M=D
 
-@R14
+@R13
 D=M
 
-@R15
+@R14
 A=M
 M=D
 ";
 
         public static string PopR14IntoPointerIndex(int pointer, int index) =>
             $@"
+@R13
+M=D
 @{pointer}
 D=A
 @{index}
 D=D+A
-@R15
+@R14
 M=D
 
-@R14
+@R13
 D=M
 
-@R15
+@R14
 A=M
 M=D
 ";

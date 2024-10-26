@@ -53,7 +53,7 @@ namespace HackVMToAssembly.CodeWriter
             }
             else if(command == CommandType.C_Pop)
             {
-                WriteGoToCommand("pop");
+                _writer.Write(VmToAssemblyStandardFunctions.PopDefinition);
                 
                 if (segment == "constant")
                     _writer.Write(VmToAssemblyStandardFunctions.PopR14IntoConstant(index));
