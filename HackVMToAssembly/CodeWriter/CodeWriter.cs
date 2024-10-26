@@ -49,7 +49,7 @@ namespace HackVMToAssembly.CodeWriter
                 else
                     throw new Exception($"Cannot handle segment {segment}");
 
-                WriteGoToCommand("push");
+                _writer.Write(VmToAssemblyStandardFunctions.PushDefinition);
             }
             else if(command == CommandType.C_Pop)
             {

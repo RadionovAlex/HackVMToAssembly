@@ -184,20 +184,12 @@ A=M
 0;JMP";
 
         public static string PushDefinition => @"
-@R14
-D=M
 @SP // A is at SP now
 A=M // go to address of SP
 M=D // write to the RAM[A] (where pointer points) temporary value from D register  (or from R14)
 @SP
 M=M+1  // increase stack pointer index
-
-@R14
-M=0
-
-@R13
-A=M
-0;JMP";
+";
 
         public static string GoToR13CodeRaw => @"
 @R13
@@ -209,8 +201,7 @@ A=M
         public static string PutConstantIntoR14(int value) =>
             @$"@{value}
 D=A
-@R14
-M=D";
+";
 
         public static string PutSegmentIndexValueIntoR14(string segment, int index) =>
             @$"@{index}
@@ -218,8 +209,7 @@ D=A
 @{segment}
 A=D+M
 D=M
-@R14
-M=D";
+";
 
         public static string PutPointerIndexValueIntoR14(int ponterValue, int index) =>
             $@"@{ponterValue}
@@ -227,8 +217,7 @@ D=A
 @{index}
 A=D+A
 D=M
-@R14
-M=D";
+";
 
         public static string PopDefinition => @"
 // go to stackPointer, get previous value, write it in the R14. Then -> decrease stackPointer

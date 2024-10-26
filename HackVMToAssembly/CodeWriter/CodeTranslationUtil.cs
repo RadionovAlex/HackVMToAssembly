@@ -13,8 +13,9 @@
             {"and", VmToAssemblyStandardFunctions.AndDefinition},
             {"or", VmToAssemblyStandardFunctions.OrDefinition},
             {"not", VmToAssemblyStandardFunctions.NotDefinition},
-            {"push", VmToAssemblyStandardFunctions.PushDefinition},
-            {"pop", VmToAssemblyStandardFunctions.PopDefinition},
+            {"pop", VmToAssemblyStandardFunctions.PopDefinition}
+            /*{"push", VmToAssemblyStandardFunctions.PushDefinition},
+            {"pop", VmToAssemblyStandardFunctions.PopDefinition},*/
         };
 
         public static Dictionary<string, string> SegmentsVMToAssemblyMap = new Dictionary<string, string>()
