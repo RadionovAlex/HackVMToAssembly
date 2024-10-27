@@ -7,7 +7,7 @@
         C_Pop,
         C_Label,
         C_GoTo,
-        C_If,
+        C_IfGoTo,
         C_Function,
         C_Return,
         C_Call,

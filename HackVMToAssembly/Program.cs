@@ -25,6 +25,30 @@ while (parser.HasMoreCommands())
             codeWriter.WritePushPop(commandType, parser.Arg1, parser.Arg2);
             break;
 
+        case HackVMToAssembly.CommandType.C_Label:
+            codeWriter.WriteLabel(parser.Command);
+            break;
+
+        case HackVMToAssembly.CommandType.C_GoTo:
+            codeWriter.WriteGoTo(parser.Arg1);
+            break;
+
+        case HackVMToAssembly.CommandType.C_IfGoTo:
+            codeWriter.WriteIf(parser.Arg1);
+            break;
+
+        case HackVMToAssembly.CommandType.C_Function:
+            codeWriter.WriteFunction(parser.Arg1, parser.Arg2);
+            break;
+
+        case HackVMToAssembly.CommandType.C_Return:
+            codeWriter.WriteReturn();
+            break;
+
+        case HackVMToAssembly.CommandType.C_Call:
+            codeWriter.WriteCall(parser.Arg1, parser.Arg2);
+            break;
+
         default: throw new Exception($"Unhandled command type: {commandType}");
     }
 }

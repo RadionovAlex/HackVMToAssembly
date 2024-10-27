@@ -13,9 +13,12 @@
             _rawTextLines = RawsUtil.RemoveComments(_rawTextLines);
         }
 
+        public string Command => GetRawCommand().CommandName;
+
         public string Arg1 => GetRawCommand().Arg1;
 
         public int Arg2 => GetRawCommand().Arg2 ?? -999;
+        
 
         public CommandType GetCommandType() => GetRawCommand().CommandType;
 

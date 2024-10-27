@@ -31,7 +31,8 @@ namespace HackVMToAssembly.CodeWriter
 
         public void WriteArithmetic(string command)
         {
-            WriteGoToCommand(command);
+            var code = AssemblyFunctionDefinitionCreator.GetGoToArithmeticCommand(command, _functionCallCounts, _functionsEntrances);
+            _writer.Write(code);
         }
 
         public void WritePushPop(CommandType command, string segment, int index)
@@ -39,13 +40,13 @@ namespace HackVMToAssembly.CodeWriter
             if(command == CommandType.C_Push)
             {
                 if (segment == "constant")
-                    _writer.Write(VmToAssemblyStandardFunctions.PutConstantIntoR14(index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PutConstantIntoD(index));
 
                 else if (CodeTranslationUtil.SegmentsVMToAssemblyMap.TryGetValue(segment, out var asmSegment))
-                    _writer.Write(VmToAssemblyStandardFunctions.PutSegmentIndexValueIntoR14(asmSegment, index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PutSegmentIndexValueIntoD(asmSegment, index));
 
                 else if (CodeTranslationUtil.PointersValues.TryGetValue(segment, out var ptr))
-                    _writer.Write(VmToAssemblyStandardFunctions.PutPointerIndexValueIntoR14(ptr, index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PutPointerIndexValueIntoD(ptr, index));
                 else
                     throw new Exception($"Cannot handle segment {segment}");
 
@@ -56,13 +57,13 @@ namespace HackVMToAssembly.CodeWriter
                 _writer.Write(VmToAssemblyStandardFunctions.PopDefinition);
                 
                 if (segment == "constant")
-                    _writer.Write(VmToAssemblyStandardFunctions.PopR14IntoConstant(index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PopDIntoConstant(index));
 
                 else if (CodeTranslationUtil.SegmentsVMToAssemblyMap.TryGetValue(segment, out var asmSegment))
-                    _writer.Write(VmToAssemblyStandardFunctions.PopR14IntoSegment(asmSegment, index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PopDIntoSegment(asmSegment, index));
 
                 else if (CodeTranslationUtil.PointersValues.TryGetValue(segment, out var ptr))
-                    _writer.Write(VmToAssemblyStandardFunctions.PopR14IntoPointerIndex(ptr, index));
+                    _writer.Write(VmToAssemblyStandardFunctions.PopDIntoPointerIndex(ptr, index));
                 else
                     throw new Exception($"Cannot handle segment {segment}");
             }
@@ -84,10 +85,45 @@ namespace HackVMToAssembly.CodeWriter
             }   
         }
 
-        private void WriteGoToCommand(string command)
+        public void WriteInit()
         {
-            var code = AssemblyFunctionDefinitionCreator.GetGoToCommand(command, _functionCallCounts, _functionsEntrances);
-            _writer.Write(code);
+            WriteProgramVariablesInitialization();
+        }
+
+        public void WriteLabel(string label)
+        {
+            _writer.Write(label);
+        }
+
+        public void WriteGoTo(string goToLabel)
+        {
+            
+        }
+
+        public void WriteIf(string label)
+        {
+            
+        }
+
+        public void WriteCall(string funcName, int argumentsNumber)
+        {
+            var callCode = AssemblyFunctionDefinitionCreator.CallFunction(funcName, argumentsNumber, _functionCallCounts, _functionsEntrances);
+            _writer.Write(callCode);
+        }
+
+        public void WriteReturn()
+        {
+            var returnCode = AssemblyFunctionDefinitionCreator.ReturnFromFunction();
+            _writer.Write(returnCode);
+        }
+
+        public void WriteFunction(string funcName, int localsNumer)
+        {
+                var functionEntrance = new FunctionEntrance(funcName);
+                _functionsEntrances.Add(funcName, functionEntrance);
+                
+                var funcCode = AssemblyFunctionDefinitionCreator.GetFuncAssemblyCode(functionEntrance, localsNumer);
+                _writer.Write(funcCode);
         }
     }
 }

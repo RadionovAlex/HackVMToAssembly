@@ -1,7 +1,10 @@
-﻿namespace HackVMToAssembly.Parser
+﻿using System.Text.RegularExpressions;
+
+namespace HackVMToAssembly.Parser
 {
     public class Command
     {
+        private const string LabelPattern = @"\(([^)]+)\)";
         private string _raw;
         public Command(string raw)
         {
@@ -22,6 +25,10 @@
 
             if (CommandType == CommandType.C_Arithmetic)
                 Arg1 = CommandName;
+            if (CommandType == CommandType.C_Label)
+                Arg1 = ExtractLabelName(CommandName);
+
+
         }
 
         public CommandType CommandType { get; }
@@ -33,12 +40,46 @@
         {
             if (RawsUtil.ArithmeticFunctions.Contains(_raw))
                 return CommandType.C_Arithmetic;
-            else if (_raw.StartsWith("push"))
+
+            if (_raw.StartsWith("push"))
                 return CommandType.C_Push;
-            else if (_raw.StartsWith("pop"))
+
+            if (_raw.StartsWith("pop"))
                 return CommandType.C_Pop;
 
-            return CommandType.C_If;
+            if (_raw.StartsWith("(") && _raw.EndsWith(")"))
+                return CommandType.C_Label;
+
+            if (_raw.StartsWith("goto"))
+                return CommandType.C_GoTo;
+
+            if (_raw.StartsWith("if"))
+                return CommandType.C_IfGoTo;
+
+            if (_raw.StartsWith("function"))
+                return CommandType.C_Function;
+
+            if (_raw.StartsWith("return"))
+                return CommandType.C_Return;
+
+            if (_raw.StartsWith("call"))
+                return CommandType.C_Call;
+
+
+            throw new Exception($"Cannot parse command type from {_raw}");
+        }
+
+        private string ExtractLabelName(string label)
+        {
+            Match match = Regex.Match(label, LabelPattern);
+
+            if (match.Success)
+            {
+                // Extract and print the value within parentheses
+                string extractedValue = match.Groups[1].Value;
+                return extractedValue;
+            }
+            throw new Exception($"Cannot extract label value from {label}");
         }
     }
 }

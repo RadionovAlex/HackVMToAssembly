@@ -191,19 +191,13 @@ M=D // write to the RAM[A] (where pointer points) temporary value from D registe
 M=M+1  // increase stack pointer index
 ";
 
-        public static string GoToR13CodeRaw => @"
-@R13
-A=M
-0;JMP
-";
 
-
-        public static string PutConstantIntoR14(int value) =>
+        public static string PutConstantIntoD(int value) =>
             @$"@{value}
 D=A
 ";
 
-        public static string PutSegmentIndexValueIntoR14(string segment, int index) =>
+        public static string PutSegmentIndexValueIntoD(string segment, int index) =>
             @$"@{index}
 D=A
 @{segment}
@@ -211,7 +205,7 @@ A=D+M
 D=M
 ";
 
-        public static string PutPointerIndexValueIntoR14(int ponterValue, int index) =>
+        public static string PutPointerIndexValueIntoD(int ponterValue, int index) =>
             $@"@{ponterValue}
 D=A
 @{index}
@@ -229,10 +223,10 @@ D=M
 M=M-1
 ";
 
-        public static string PopR14IntoConstant(int value) =>
+        public static string PopDIntoConstant(int value) =>
            @$"//it should be actually called. By in case there is should be an stack cleaning - ok..";
 
-        public static string PopR14IntoSegment(string segment, int index) =>
+        public static string PopDIntoSegment(string segment, int index) =>
             $@"
 @R13
 M=D
@@ -252,7 +246,7 @@ A=M
 M=D
 ";
 
-        public static string PopR14IntoPointerIndex(int pointer, int index) =>
+        public static string PopDIntoPointerIndex(int pointer, int index) =>
             $@"
 @R13
 M=D
@@ -269,6 +263,11 @@ D=M
 @R14
 A=M
 M=D
+";
+
+        public static string CallFunctionDefinition(string function, int argumentsNumber) =>
+            $@"
+
 ";
 
     }
