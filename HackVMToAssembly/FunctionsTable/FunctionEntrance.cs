@@ -5,7 +5,7 @@
         public FunctionEntrance(string functionName)
         {
             FunctionName = functionName;
-            FunctionLabel = functionName + "_Label";
+            FunctionLabel = functionName + "_LBL";
         }
 
         public FunctionEntrance(string functionName, string functionLabel)

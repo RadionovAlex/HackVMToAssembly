@@ -21,7 +21,5 @@
         void WriteArithmetic(string command);
 
         void WritePushPop(CommandType command, string segment, int index);
-
-        void Close();
     }
 }

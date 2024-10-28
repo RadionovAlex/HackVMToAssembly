@@ -184,10 +184,17 @@ M=D
             
         }
 
-        string GoTo(string funcName) =>
+        public static string GoTo(string funcName) =>
             $@"
 @{funcName}
 0;JMP
+";
+
+        public static string IfGoTo(string funcName) =>
+            $@"
+{VmToAssemblyStandardFunctions.PopDefinition}
+@{funcName}
+D;JLT
 ";
     }
 }

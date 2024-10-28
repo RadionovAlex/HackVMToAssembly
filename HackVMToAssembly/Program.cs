@@ -1,55 +1,97 @@
-﻿using HackVMToAssembly.CodeWriter;
+﻿using HackVMToAssembly;
+using HackVMToAssembly.CodeWriter;
 using HackVMToAssembly.Parser;
 
-string hackVMFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Hack.vm");
+string hackVMDirectoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "HackDirectory");
 string hackAssemblyFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Hack.hasm");
-var text = System.IO.File.ReadAllText(hackVMFilePath);
-var parser = new ParserModule(text);
-var codeWriter = new CodeWriter();
-codeWriter.SetFileName(hackAssemblyFilePath);
+var streamWriter = new StreamWriter(hackAssemblyFilePath, append: false);
+var dirFiles = System.IO.Directory.EnumerateFiles(hackVMDirectoryPath, "*.vm");
+
+bool sysInitFound = IsAnyFilesContainsSysInit();
+
+var codeWriter = new CodeWriter(streamWriter);
+
+codeWriter.WriteInit();
+if (!sysInitFound)
+    streamWriter.Write(VmToAssemblyStandardFunctions.WriteCustomSysInit);
+
+codeWriter.WriteStandardFunctions();
 codeWriter.WriteProgramStartLabel();
-codeWriter.WriteProgramVariablesInitialization();
 
-while (parser.HasMoreCommands())
+foreach (var vmFilePath in dirFiles)
 {
-    parser.ReadNext();
-    var commandType = parser.GetCommandType();
-    switch (commandType)
+    var fileContent = System.IO.File.ReadAllText(vmFilePath);
+    var parser = new ParserModule(fileContent);
+
+    var fileName = Path.GetFileName(vmFilePath);
+    codeWriter.SetFileName(fileName);
+
+    while (parser.HasMoreCommands())
     {
-        case HackVMToAssembly.CommandType.C_Arithmetic:
-            codeWriter.WriteArithmetic(parser.Arg1);
-            break;
+        parser.ReadNext();
+        var commandType = parser.GetCommandType();
+        switch (commandType)
+        {
+            case CommandType.C_Arithmetic:
+                codeWriter.WriteArithmetic(parser.Arg1);
+                break;
 
-        case HackVMToAssembly.CommandType.C_Push:
-        case HackVMToAssembly.CommandType.C_Pop:
-            codeWriter.WritePushPop(commandType, parser.Arg1, parser.Arg2);
-            break;
+            case CommandType.C_Push:
+            case CommandType.C_Pop:
+                codeWriter.WritePushPop(commandType, parser.Arg1, parser.Arg2);
+                break;
 
-        case HackVMToAssembly.CommandType.C_Label:
-            codeWriter.WriteLabel(parser.Command);
-            break;
+            case CommandType.C_Label:
+                codeWriter.WriteLabel(parser.Command);
+                break;
 
-        case HackVMToAssembly.CommandType.C_GoTo:
-            codeWriter.WriteGoTo(parser.Arg1);
-            break;
+            case CommandType.C_GoTo:
+                codeWriter.WriteGoTo(parser.Arg1);
+                break;
 
-        case HackVMToAssembly.CommandType.C_IfGoTo:
-            codeWriter.WriteIf(parser.Arg1);
-            break;
+            case CommandType.C_IfGoTo:
+                codeWriter.WriteIf(parser.Arg1);
+                break;
 
-        case HackVMToAssembly.CommandType.C_Function:
-            codeWriter.WriteFunction(parser.Arg1, parser.Arg2);
-            break;
+            case CommandType.C_Function:
+                codeWriter.WriteFunction(parser.Arg1, parser.Arg2);
+                break;
 
-        case HackVMToAssembly.CommandType.C_Return:
-            codeWriter.WriteReturn();
-            break;
+            case CommandType.C_Return:
+                codeWriter.WriteReturn();
+                break;
 
-        case HackVMToAssembly.CommandType.C_Call:
-            codeWriter.WriteCall(parser.Arg1, parser.Arg2);
-            break;
+            case CommandType.C_Call:
+                codeWriter.WriteCall(parser.Arg1, parser.Arg2);
+                break;
 
-        default: throw new Exception($"Unhandled command type: {commandType}");
+            default: throw new Exception($"Unhandled command type: {commandType}");
+        }
     }
 }
-codeWriter.Close();
+
+streamWriter?.Flush();
+streamWriter?.Close();
+
+bool IsAnyFilesContainsSysInit()
+{
+    foreach (var vmFilePath in dirFiles)
+    {
+        var fileContent = System.IO.File.ReadAllText(vmFilePath);
+        var contentParser = new ParserModule(fileContent);
+        while (contentParser.HasMoreCommands())
+        {
+            contentParser.ReadNext();
+            var commandType = contentParser.GetCommandType();
+            if (commandType == CommandType.C_Function && contentParser.Arg1 == "Sys.init")
+            {
+                sysInitFound = true;
+                Console.WriteLine("Found Sys.Init function");
+                return true;
+            }
+        }
+    }
+
+    Console.WriteLine("Any of .vm files does not contains Sys.Init function");
+    return false;
+}

@@ -4,34 +4,31 @@ namespace HackVMToAssembly.CodeWriter
 {
     public class CodeWriter : ICodeWriter
     {
-        private Dictionary<string, FunctionEntrance> _functionsEntrances = new();
+        public Dictionary<string, FunctionEntrance> FunctionsEntrances { get; private set; } = new();
 
-        private Dictionary<string, int> _functionCallCounts = new();
+        public Dictionary<string, int> FunctionCallCounts { get; private set; } = new();
 
         private StreamWriter _writer;
 
-        public void Close()
+        private string _vmFileName;
+
+
+        public CodeWriter(StreamWriter writer)
         {
-            _writer?.Flush();
-            _writer?.Close();
+            _writer = writer;
         }
 
         public void SetFileName(string fileName)
         {
-            _writer = new StreamWriter(fileName, append: false);
-
-            WriteStandardFunctions();
+            _vmFileName = fileName;
         }
 
         public void WriteProgramStartLabel() => 
             _writer.Write(VmToAssemblyStandardFunctions.ProgramStartDefinition);
 
-        public void WriteProgramVariablesInitialization() => 
-            _writer.Write(VmToAssemblyStandardFunctions.ProgramVariablesInitialization);
-
         public void WriteArithmetic(string command)
         {
-            var code = AssemblyFunctionDefinitionCreator.GetGoToArithmeticCommand(command, _functionCallCounts, _functionsEntrances);
+            var code = AssemblyFunctionDefinitionCreator.GetGoToArithmeticCommand(command, FunctionCallCounts, FunctionsEntrances);
             _writer.Write(code);
         }
 
@@ -73,42 +70,45 @@ namespace HackVMToAssembly.CodeWriter
             }
         }
 
-        private void WriteStandardFunctions()
-        {
-            _writer.Write(VmToAssemblyStandardFunctions.GoToProgramStartDefinition);
-            foreach(var kvp in CodeTranslationUtil.FunctionAndVmImplementations)
-            {
-                var functionEntrance = new FunctionEntrance(kvp.Key);
-                _functionsEntrances.Add(kvp.Key, functionEntrance);
-                var funcCode = AssemblyFunctionDefinitionCreator.PackAssemblyCode(functionEntrance, kvp.Value);
-                _writer.Write(funcCode);
-            }   
-        }
-
         public void WriteInit()
         {
-            WriteProgramVariablesInitialization();
+            _writer.Write(VmToAssemblyStandardFunctions.ProgramVariablesInitialization);
+            _writer.Write(VmToAssemblyStandardFunctions.WriteGoToSysInit);
         }
 
         public void WriteLabel(string label)
         {
+            // _writer.Write($"{_vmFileName}.{label}");
             _writer.Write(label);
         }
 
-        public void WriteGoTo(string goToLabel)
+        public void WriteGoTo(string label)
         {
-            
+            // _writer.Write(AssemblyFunctionDefinitionCreator.GoTo($"{_vmFileName}.{label}"));
+            _writer.Write(AssemblyFunctionDefinitionCreator.GoTo(label));
         }
 
         public void WriteIf(string label)
         {
-            
+            _writer.Write(AssemblyFunctionDefinitionCreator.IfGoTo(label));
         }
 
         public void WriteCall(string funcName, int argumentsNumber)
         {
-            var callCode = AssemblyFunctionDefinitionCreator.CallFunction(funcName, argumentsNumber, _functionCallCounts, _functionsEntrances);
+            // var toWriteName = funcName == "Sys.Init" ? funcName : $"{_vmFileName}.{funcName}";
+            var callCode = AssemblyFunctionDefinitionCreator.CallFunction(funcName, argumentsNumber, FunctionCallCounts, FunctionsEntrances);
             _writer.Write(callCode);
+        }
+      
+
+        public void WriteFunction(string funcName, int localsNumer)
+        {
+            // var toWriteName = funcName == "Sys.Init" ? funcName : $"{_vmFileName}.{funcName}";
+            var functionEntrance = new FunctionEntrance(funcName);
+            FunctionsEntrances.Add(funcName, functionEntrance);
+
+            var funcCode = AssemblyFunctionDefinitionCreator.GetFuncAssemblyCode(functionEntrance, localsNumer);
+            _writer.Write(funcCode);
         }
 
         public void WriteReturn()
@@ -117,13 +117,15 @@ namespace HackVMToAssembly.CodeWriter
             _writer.Write(returnCode);
         }
 
-        public void WriteFunction(string funcName, int localsNumer)
+        public void WriteStandardFunctions()
         {
-                var functionEntrance = new FunctionEntrance(funcName);
-                _functionsEntrances.Add(funcName, functionEntrance);
-                
-                var funcCode = AssemblyFunctionDefinitionCreator.GetFuncAssemblyCode(functionEntrance, localsNumer);
+            foreach (var kvp in CodeTranslationUtil.FunctionAndVmImplementations)
+            {
+                var functionEntrance = new FunctionEntrance(kvp.Key);
+                FunctionsEntrances.Add(kvp.Key, functionEntrance);
+                var funcCode = AssemblyFunctionDefinitionCreator.PackAssemblyCode(functionEntrance, kvp.Value);
                 _writer.Write(funcCode);
+            }
         }
     }
 }

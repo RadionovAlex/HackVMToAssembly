@@ -2,14 +2,21 @@
 {
     public class VmToAssemblyStandardFunctions
     {
-
-        public static string GoToProgramStartDefinition => @"
-@ProgramStart
-0;JMP";
-
         public static string ProgramStartDefinition => @"
 (ProgramStart)
 ";
+
+        public static string WriteGoToSysInit =>
+            @$"
+@Sys.init
+0;JMP
+";
+
+        public static string WriteCustomSysInit => @"
+(Sys.init)
+@ProgramStart
+0;JMP";
+
 
         public static string ProgramVariablesInitialization => @"
 @256
@@ -264,11 +271,5 @@ D=M
 A=M
 M=D
 ";
-
-        public static string CallFunctionDefinition(string function, int argumentsNumber) =>
-            $@"
-
-";
-
     }
 }

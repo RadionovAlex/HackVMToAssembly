@@ -24,11 +24,7 @@ namespace HackVMToAssembly.Parser
 
 
             if (CommandType == CommandType.C_Arithmetic)
-                Arg1 = CommandName;
-            if (CommandType == CommandType.C_Label)
-                Arg1 = ExtractLabelName(CommandName);
-
-
+                Arg1 = CommandName;           
         }
 
         public CommandType CommandType { get; }
@@ -47,7 +43,7 @@ namespace HackVMToAssembly.Parser
             if (_raw.StartsWith("pop"))
                 return CommandType.C_Pop;
 
-            if (_raw.StartsWith("(") && _raw.EndsWith(")"))
+            if (_raw.StartsWith("label"))
                 return CommandType.C_Label;
 
             if (_raw.StartsWith("goto"))
