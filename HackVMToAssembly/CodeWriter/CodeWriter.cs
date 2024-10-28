@@ -79,7 +79,9 @@ namespace HackVMToAssembly.CodeWriter
         public void WriteLabel(string label)
         {
             // _writer.Write($"{_vmFileName}.{label}");
-            _writer.Write(label);
+            _writer.Write($@"
+({ label})
+");
         }
 
         public void WriteGoTo(string label)

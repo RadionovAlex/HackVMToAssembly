@@ -98,7 +98,7 @@ D=M
 // 6 - reposition current ARG
 @5
 D=A
-@{argumentsNumber};
+@{argumentsNumber}
 D=D+A
 @SP
 D=M-D

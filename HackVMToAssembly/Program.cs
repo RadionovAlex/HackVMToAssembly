@@ -42,7 +42,7 @@ foreach (var vmFilePath in dirFiles)
                 break;
 
             case CommandType.C_Label:
-                codeWriter.WriteLabel(parser.Command);
+                codeWriter.WriteLabel(parser.Arg1);
                 break;
 
             case CommandType.C_GoTo:

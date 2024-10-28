@@ -195,8 +195,7 @@ A=M
 A=M // go to address of SP
 M=D // write to the RAM[A] (where pointer points) temporary value from D register  (or from R14)
 @SP
-M=M+1  // increase stack pointer index
-";
+M=M+1  // increase stack pointer index";
 
 
         public static string PutConstantIntoD(int value) =>

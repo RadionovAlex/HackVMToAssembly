@@ -5,7 +5,9 @@
         public FunctionEntrance(string functionName)
         {
             FunctionName = functionName;
-            FunctionLabel = functionName + "_LBL";
+            FunctionLabel = functionName;
+            if (FunctionName != "Sys.init")
+                FunctionLabel = FunctionLabel + "LBL";
         }
 
         public FunctionEntrance(string functionName, string functionLabel)
