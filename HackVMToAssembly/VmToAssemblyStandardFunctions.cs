@@ -199,12 +199,14 @@ M=M+1  // increase stack pointer index";
 
 
         public static string PutConstantIntoD(int value) =>
-            @$"@{value}
+            @$"
+@{value}
 D=A
 ";
 
         public static string PutSegmentIndexValueIntoD(string segment, int index) =>
-            @$"@{index}
+            @$"
+@{index}
 D=A
 @{segment}
 A=D+M
@@ -212,7 +214,8 @@ D=M
 ";
 
         public static string PutPointerIndexValueIntoD(int ponterValue, int index) =>
-            $@"@{ponterValue}
+            $@"
+@{ponterValue}
 D=A
 @{index}
 A=D+A
