@@ -194,7 +194,7 @@ M=D
             $@"
 {VmToAssemblyStandardFunctions.PopDefinition}
 @{funcName}
-D;JLT
+D;JGT
 ";
     }
 }
