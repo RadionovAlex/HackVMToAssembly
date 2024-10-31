@@ -81,8 +81,10 @@ D=M
 {VmToAssemblyStandardFunctions.PushDefinition}
 
 // 3 - push current ARG
-@ARG
-D=M
+@{argumentsNumber+2}
+D=A
+@SP
+D=M-D
 {VmToAssemblyStandardFunctions.PushDefinition};
 
 // 4 - push current THIS
@@ -108,7 +110,7 @@ M=D
 
 // 7 - reposition LCL
 @SP
-D=M
+D=M 
 @LCL
 M=D
 
@@ -166,6 +168,7 @@ M=D+1
 
 // 9 - goto RET
 @R14
+A=M
 0;JMP
 ";
 
