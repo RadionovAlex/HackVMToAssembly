@@ -97,6 +97,11 @@ namespace HackVMToAssembly.CodeWriter
 
         public void WriteCall(string funcName, int argumentsNumber)
         {
+            if (!FunctionsEntrances.TryGetValue(funcName, out var functionEntrance))
+            {
+                functionEntrance = new FunctionEntrance(funcName);
+                FunctionsEntrances.Add(funcName, functionEntrance);
+            }
             // var toWriteName = funcName == "Sys.Init" ? funcName : $"{_vmFileName}.{funcName}";
             var callCode = AssemblyFunctionDefinitionCreator.CallFunction(funcName, argumentsNumber, FunctionCallCounts, FunctionsEntrances);
             _writer.Write(callCode);
@@ -105,9 +110,11 @@ namespace HackVMToAssembly.CodeWriter
 
         public void WriteFunction(string funcName, int localsNumer)
         {
-            // var toWriteName = funcName == "Sys.Init" ? funcName : $"{_vmFileName}.{funcName}";
-            var functionEntrance = new FunctionEntrance(funcName);
-            FunctionsEntrances.Add(funcName, functionEntrance);
+            if(!FunctionsEntrances.TryGetValue(funcName, out var functionEntrance))
+            {
+                functionEntrance = new FunctionEntrance(funcName);
+                FunctionsEntrances.Add(funcName, functionEntrance);
+            }
 
             var funcCode = AssemblyFunctionDefinitionCreator.GetFuncAssemblyCode(functionEntrance, localsNumer);
             _writer.Write(funcCode);
