@@ -128,18 +128,13 @@ M=D
         {
             var code = @$"
 
-// 3 - *ARG = pop() - reposition the return value for the caller
-// changed order because of Pop uses registers R13 and R14, which 1,2 uses also for temporary needs
-{VmToAssemblyStandardFunctions.PopDefinition}
-{VmToAssemblyStandardFunctions.PopDIntoSegment("ARG", 0)}
-
 // 1 - FRAME=LCL
 @LCL
 D=M
 @R13 // FRAME
 M=D
 
-// 2 - RET = *(FRAME-5) put the return address in a temporary value
+// 2 - RET = *(FRAME-5) put the return address in a temporary value 
 @5
 D=A
 @R13
@@ -147,6 +142,13 @@ A=M-D
 D=M
 @R14 // put return address to the R14
 M=D
+
+// 3 - *ARG = pop() - reposition the return value for the caller
+// changed order because of Pop uses registers R13 and R14, which 1,2 uses also for temporary needs
+// the PROBLEM is that if ARGUMENTS count is 0, *ARG = pop() will override *(FRAME-5) value..
+// so need to retrn order of commands
+{VmToAssemblyStandardFunctions.PopDefinition}
+{VmToAssemblyStandardFunctions.PopDIntoSegmentStart("ARG")}
 
 // 4 - SP = ARG+1
 @ARG

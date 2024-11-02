@@ -255,6 +255,13 @@ A=M
 M=D
 ";
 
+        public static string PopDIntoSegmentStart(string segment) =>
+            @$"
+@{segment}
+A=M
+M=D
+";
+
         public static string PopDIntoPointerIndex(int pointer, int index) =>
             $@"
 @R13
