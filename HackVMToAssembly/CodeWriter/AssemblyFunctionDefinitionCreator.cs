@@ -81,10 +81,8 @@ D=M
 {VmToAssemblyStandardFunctions.PushDefinition}
 
 // 3 - push current ARG
-@{argumentsNumber+2}
-D=A
-@SP
-D=M-D
+@ARG
+D=M
 {VmToAssemblyStandardFunctions.PushDefinition};
 
 // 4 - push current THIS
