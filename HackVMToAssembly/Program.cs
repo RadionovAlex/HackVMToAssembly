@@ -26,6 +26,8 @@ foreach (var vmFilePath in dirFiles)
     var fileName = Path.GetFileName(vmFilePath);
     codeWriter.SetFileName(fileName);
 
+    var staticSegmentUsageCount = 0;
+
     while (parser.HasMoreCommands())
     {
         parser.ReadNext();
@@ -38,6 +40,13 @@ foreach (var vmFilePath in dirFiles)
 
             case CommandType.C_Push:
             case CommandType.C_Pop:
+                if(parser.Arg1 == "static")
+                {
+                    var index = parser.Arg2;
+                    index++;
+                    if (index > staticSegmentUsageCount)
+                        staticSegmentUsageCount = index;
+                }
                 codeWriter.WritePushPop(commandType, parser.Arg1, parser.Arg2);
                 break;
 
@@ -68,6 +77,11 @@ foreach (var vmFilePath in dirFiles)
             default: throw new Exception($"Unhandled command type: {commandType}");
         }
     }
+
+    //each .vm file should have it`s own static segment space. So, in case of 3 files, there should be 3 different spaces.
+    var staticPointerValue = CodeTranslationUtil.PointersValues["static"];
+    staticPointerValue += staticSegmentUsageCount;
+    CodeTranslationUtil.PointersValues["static"] = staticPointerValue;
 }
 
 streamWriter?.Flush();
