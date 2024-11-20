@@ -15,7 +15,7 @@
             "not"
         };
 
-        public static List<string> RemoveComments(List<string> lines)
+        public static List<string> RemoveComments(this List<string> lines)
         {
             List<string> cleanLines = new List<string>();
 
@@ -27,6 +27,12 @@
             }
 
             return cleanLines;
+        }
+
+        public static List<string> SplitTextByRows(string text)
+        {
+            return text.Split("\n", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Where(l => !l.StartsWith("//")).ToList();
         }
     }
 }
